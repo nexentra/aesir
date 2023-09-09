@@ -1,8 +1,9 @@
 package ast
 
 import (
-	"github.com/nexentra/aesir/token"
 	"testing"
+
+	"github.com/nexentra/aesir/token"
 )
 
 func TestString(t *testing.T) {

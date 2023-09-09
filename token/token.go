@@ -44,8 +44,8 @@ const (
 )
 
 type Token struct {
-	Type    TokenType
-	Literal string
+	Type    TokenType // the type of the token. e.g. IDENT, INT, ASSIGN, PLUS, etc.
+	Literal string // the literal value of the token. e.g. for a let statement, it returns "x"
 }
 
 var keywords = map[string]TokenType{

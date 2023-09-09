@@ -7,8 +7,8 @@ import (
 )
 
 type Node interface {
-	TokenLiteral() string
-	String() string
+	TokenLiteral() string // returns the literal value of the token. e.g. for a let statement, it returns "let"
+	String() string // returns a string representation of the node. e.g. for a let statement, it returns "let x = 5;"
 }
 
 type Statement interface {
@@ -22,12 +22,12 @@ type Expression interface {
 }
 
 type Program struct {
-	Statements []Statement
+	Statements []Statement // a program is a series of statements. e.g. let x = 5; let y = 10; let foobar = 838383;
 }
 
 type Identifier struct {
 	Token token.Token // the token.IDENT token
-	Value string
+	Value string // the identifier's name. e.g. for a let statement, it returns "x"
 }
 
 func (p *Program) TokenLiteral() string {
@@ -46,7 +46,7 @@ func (p *Program) String() string {
 	return out.String()
 }
 
-func (i *Identifier) expressionNode()      {}
+func (i *Identifier) expressionNode() {}
 func (i *Identifier) TokenLiteral() string { return i.Token.Literal }
 func (i *Identifier) String() string { return i.Value }
 
