@@ -129,9 +129,9 @@ func (pe *PrefixExpression) String() string {
 
 type InfixExpression struct {
 	Token    token.Token // The operator token, e.g. IDENT, INT, ASSIGN, PLUS, etc.
-	Left     Expression // The left side of the expression
-	Operator string 	// The operator, e.g. +, -, *, /
-	Right    Expression // The right side of the expression
+	Left     Expression  // The left side of the expression
+	Operator string      // The operator, e.g. +, -, *, /
+	Right    Expression  // The right side of the expression
 }
 
 func (ie *InfixExpression) expressionNode()      {}
@@ -145,3 +145,12 @@ func (ie *InfixExpression) String() string {
 	out.WriteString(")")
 	return out.String()
 }
+
+type Boolean struct {
+	Token token.Token
+	Value bool
+}
+
+func (b *Boolean) expressionNode()      {}
+func (b *Boolean) TokenLiteral() string { return b.Token.Literal }
+func (b *Boolean) String() string       { return b.Token.Literal }
