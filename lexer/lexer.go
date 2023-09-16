@@ -1,8 +1,6 @@
 package lexer
 
 import (
-	"fmt"
-
 	"github.com/nexentra/aesir/token"
 )
 
@@ -78,7 +76,6 @@ func (l *Lexer) NextToken() token.Token {
 		} else if isDigit(l.ch) {
 			tok.Type = token.INT
 			tok.Literal = l.readNumber()
-			fmt.Println(l.ch, l.readPosition, l.position)
 			return tok
 		} else {
 			tok = newToken(token.ILLEGAL, l.ch)
