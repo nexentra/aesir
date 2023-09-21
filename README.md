@@ -22,40 +22,49 @@ Here are some examples of what you can do with Aesir:
 
 ### Integer Expressions
 
-```aesir let a = 5; a; // returns 5```
+```let a = 5; a; // returns 5```
 
 ### Boolean Expressions
 
-```aesir let a = true; a; // returns true```
+```let a = true; a; // returns true```
 
 ### Arithmetic Operations
 
-```aesir let a = 5 * 5; a; // returns 25```
+```let a = 5 * 5; a; // returns 25```
 
 ### Variable Assignments
 
-```aesir let a = 5; let b = a; b; // returns 5```
+```let a = 5; let b = a; b; // returns 5```
 
 ### Complex Expressions
 
-```aesir let a = 5; let b = a; let c = a + b + 5; c; // returns 15```
+```let a = 5; let b = a; let c = a + b + 5; c; // returns 15```
 
 ### Function Literals
 
-```aesir let identity = fn(x) { x; }; identity(5); // returns 5```
+```let identity = fn(x) { x; }; identity(5); // returns 5```
 
 ### If-Else Expressions
 
-```aesir let result = if (10 > 1) { "yes" } else { "no" }; result; // returns "yes"```
+```let result = if (10 > 1) { return true } else { return false }; result; // returns true```
 
 ### Return Statements
 
-```aesir let earlyReturn = fn() { return 5; 10; }; earlyReturn(); // returns 5```
+```let earlyReturn = fn() { return 5; 10; }; earlyReturn(); // returns 5```
 
 ### Error Handling
 
-```aesir let error = 5 + true; // returns "type mismatch: INTEGER + BOOLEAN"```
+```let error = 5 + true; // returns "type mismatch: INTEGER + BOOLEAN"```
 
+## More Examples
+
+### Fibonacci Sequence
+
+```let fibonacci = fn(x) { if (x == 0) { 0 } else { if (x == 1) { 1 } else { fibonacci(x - 1) + fibonacci(x - 2) } } }; fibonacci(10);```
+
+### Factorial
+
+```let factorial = fn(x) { if (x == 0) { 1 } else { x * factorial(x - 1) } }; factorial(5);```
 
 ## Getting Started
 
