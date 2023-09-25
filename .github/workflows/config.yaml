@@ -1,4 +1,4 @@
-name: Go package
+name: Aesir CI
 
 on: [push]
 
