@@ -1,13 +1,17 @@
 name: Aesir CI
 
-on: [push]
+on: 
+  push:
+    tags:
+      - "*"
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Go
         uses: actions/setup-go@v4
@@ -19,3 +23,11 @@ jobs:
 
       - name: Test
         run: go test -v ./...
+
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@master
+        with:
+          version: latest
+          args: release --rm-dist
+        env:
+          GITHUB_TOKEN: ${{ secrets.GO_RELEASER_GITHUB_TOKEN }}
