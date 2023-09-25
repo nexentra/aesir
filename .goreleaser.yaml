@@ -29,3 +29,6 @@ changelog:
     exclude:
       - "^docs:"
       - "^test:"
+env_files:
+  gitlab_token: ~/nope
+  gitea_token: ~/nope
