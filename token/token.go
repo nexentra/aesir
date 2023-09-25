@@ -7,8 +7,8 @@ const (
 	EOF     = "EOF"
 
 	// Identifiers + literals
-	IDENT = "IDENT" // add, foobar, x, y, ...
-	INT   = "INT"   // 1343456
+	IDENT  = "IDENT"  // add, foobar, x, y, ...
+	INT    = "INT"    // 1343456
 	STRING = "STRING" // "foobar"
 
 	// Operators
@@ -29,10 +29,12 @@ const (
 	COMMA     = ","
 	SEMICOLON = ";"
 
-	LPAREN = "("
-	RPAREN = ")"
-	LBRACE = "{"
-	RBRACE = "}"
+	LPAREN   = "("
+	RPAREN   = ")"
+	LBRACE   = "{"
+	RBRACE   = "}"
+	LBRACKET = "["
+	RBRACKET = "]"
 
 	// Keywords
 	FUNCTION = "FUNCTION"
@@ -46,7 +48,7 @@ const (
 
 type Token struct {
 	Type    TokenType // the type of the token. e.g. IDENT, INT, ASSIGN, PLUS, etc.
-	Literal string // the literal value of the token. e.g. for a let statement, it returns "x"
+	Literal string    // the literal value of the token. e.g. for a let statement, it returns "x"
 }
 
 var keywords = map[string]TokenType{
