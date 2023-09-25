@@ -1,6 +1,6 @@
 # The Aesir Programming Language
 
-Welcome to the Aesir Programming Language! Aesir is a new programming language written in Go. It's currently at version 0.0.5 and is under active development.
+Welcome to the Aesir Programming Language! Aesir is a new programming language written in Go. It's currently at it's beta and is under active development.
 
 ## About Aesir
 
