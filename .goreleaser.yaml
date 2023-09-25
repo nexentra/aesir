@@ -34,10 +34,3 @@ changelog:
     exclude:
     - '^docs:'
     - '^test:'
-
-changelog:
-  sort: asc
-  filters:
-    exclude:
-      - "^docs:"
-      - "^test:"
