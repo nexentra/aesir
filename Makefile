@@ -19,3 +19,4 @@ build-all:
 release:
 	git tag -a v$(v) -m "Release v$(v)"
 	git push origin v$(v)
+	git push
