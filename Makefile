@@ -17,6 +17,5 @@ build-all:
 
 .PHONY: release releases a new version
 release:
-	git tag -a v$(version) -m "Release v$(version)"
-	git push
-	git push origin v$(version)
+	git tag -a v$(v) -m "Release v$(v)"
+	git push origin v$(v)
