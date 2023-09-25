@@ -5,32 +5,27 @@ before:
 builds:
   - env:
       - CGO_ENABLED=0
-    main: ./main.go
-    binary: aesir
     goos:
       - linux
       - windows
       - darwin
-    goarch:
-      - amd64
-      - 386
 
 archives:
   - format: tar.gz
     name_template: >-
-      {{- .ProjectName }}_
+      {{ .ProjectName }}_
       {{- title .Os }}_
       {{- if eq .Arch "amd64" }}x86_64
       {{- else if eq .Arch "386" }}i386
       {{- else }}{{ .Arch }}{{ end }}
-      {{- if .Arm }}v{{ .Arm }}{{ end -}}
-checksum:
-  name_template: 'checksums.txt'
-snapshot:
-  name_template: "{{ .Tag }}-next"
+      {{- if .Arm }}v{{ .Arm }}{{ end }}
+    format_overrides:
+      - goos: windows
+        format: zip
+
 changelog:
   sort: asc
   filters:
     exclude:
-    - '^docs:'
-    - '^test:'
+      - "^docs:"
+      - "^test:"
