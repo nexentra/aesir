@@ -60,11 +60,11 @@ Here are some examples of what you can do with Aesir:
 
 ### Fibonacci Sequence
 
-```let fibonacci = fn(x) { if (x == 0) { 0 } else { if (x == 1) { 1 } else { fibonacci(x - 1) + fibonacci(x - 2) } } }; fibonacci(10);```
+```let fibonacci = fn(x) { if (x == 0) { 0 } else { if (x == 1) { 1 } else { fibonacci(x - 1) + fibonacci(x - 2) } } }; fibonacci(10); // returns 55```
 
 ### Factorial
 
-```let factorial = fn(x) { if (x == 0) { 1 } else { x * factorial(x - 1) } }; factorial(5);```
+```let factorial = fn(x) { if (x == 0) { 1 } else { x * factorial(x - 1) } }; factorial(5); // returns 120```
 
 ## Getting Started
 
