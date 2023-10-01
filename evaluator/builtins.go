@@ -1,8 +1,20 @@
 package evaluator
 
-import "github.com/nexentra/aesir/object"
+import (
+	"fmt"
+
+	"github.com/nexentra/aesir/object"
+)
 
 var builtins = map[string]*object.Builtin{
+	"puts": &object.Builtin{
+		Fn: func(args ...object.Object) object.Object {
+			for _, arg := range args {
+				fmt.Println(arg.Inspect())
+			}
+			return NULL
+		},
+	},
 	"len": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
 			if len(args) != 1 {
