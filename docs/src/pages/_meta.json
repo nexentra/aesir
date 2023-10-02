@@ -1,6 +1,7 @@
 {
     "docs": {
       "title": "Docs",
-      "type": "page"
+      "type": "page",
+      "display": "hidden"
     }
 }
