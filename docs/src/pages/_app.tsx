@@ -10,6 +10,7 @@ import { Toaster } from '@/shadcn/components/ui/toaster';
 import AnimatedBackground from '@/components/ui/animated-background';
 import { ThemeProvider } from '@/components/ui/theme-provider';
 import CustomCursor from '@/components/ui/cursor';
+import NextTopLoader from 'nextjs-toploader';
 
 function App({ Component, pageProps }) {
     const router = useRouter();
@@ -31,6 +32,7 @@ function App({ Component, pageProps }) {
                     content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover"
                 />
             </Head>
+            <NextTopLoader />
             <AnimatedBackground />
             <ThemeProvider
                 attribute="class"

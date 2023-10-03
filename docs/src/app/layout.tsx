@@ -5,6 +5,7 @@ import { Inter } from 'next/font/google'
 import { ThemeProvider } from '@/components/ui/theme-provider'
 import CustomCursor from '@/components/ui/cursor'
 import AnimatedBackground from '@/components/ui/animated-background'
+import NextTopLoader from 'nextjs-toploader';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -21,6 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter?.className}>
+      <NextTopLoader />
       <AnimatedBackground/>
         <ThemeProvider
           attribute="class"
