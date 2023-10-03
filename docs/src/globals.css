@@ -164,7 +164,6 @@ html, body {
 */
 .area {
   background: transparent;
-  background: -webkit-linear-gradient(to left, #8f94fb, #4e54c8);
   width: 100%;
   min-height: 100%; 
   position: fixed;
