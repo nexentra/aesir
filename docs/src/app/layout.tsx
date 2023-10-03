@@ -1,8 +1,10 @@
 import { Toaster } from '@/shadcn/components/ui/toaster'
-import './globals.css'
+import '../globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { ThemeProvider } from '@/components/ui/theme-provider'
+import CustomCursor from '@/components/ui/cursor'
+import AnimatedBackground from '@/components/ui/animated-background'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -18,12 +20,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={inter?.className}>
+      <AnimatedBackground/>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
         >
+          <CustomCursor />
           {children}
         </ThemeProvider>
       </body>
