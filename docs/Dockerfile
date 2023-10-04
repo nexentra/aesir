@@ -10,6 +10,10 @@ COPY . .
 
 ENV NODE_ENV production
 
+RUN bun run build
+
+COPY . .
+
 EXPOSE 3000
 
-CMD [ "bun", "run", "start" ]
+CMD [ "bun", "start" ]
