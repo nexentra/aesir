@@ -1,9 +1,9 @@
 /* eslint-disable import/no-anonymous-default-export */
 export default {
     project: {
-      link: 'https://github.com/shuding/nextra'
+      link: 'https://github.com/nexentra/aesir'
     },
-    docsRepositoryBase:"https://github.com/shuding/nextra",
+    docsRepositoryBase:"https://github.com/nexentra/aesir",
     logo: <strong>Project</strong>,
     sidebar:{
       toggleButton:true,
