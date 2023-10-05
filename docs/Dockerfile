@@ -5,7 +5,7 @@ WORKDIR /app
 
 COPY package*.json bun.lockb ./
 
-RUN bun install
+RUN bun install --no-cache
 
 COPY . .
 
@@ -26,8 +26,9 @@ COPY --from=builder /app/package.json .
 COPY --from=builder /app/bun.lockb .
 COPY --from=builder /app/next.config.js ./
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/.next/standalone ./standalone
+COPY --from=builder /app/public /app/standalone/public
+COPY --from=builder /app/.next/static /app/standalone/.next
 
 EXPOSE 3000
 
