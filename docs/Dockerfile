@@ -1,4 +1,4 @@
-FROM oven/bun
+FROM oven/bun AS base
 
 WORKDIR /frontend
 
@@ -12,7 +12,11 @@ ENV NODE_ENV production
 
 RUN bun run build
 
-COPY . .
+FROM base AS final
+
+WORKDIR /frontend
+
+COPY --from=base /frontend .
 
 EXPOSE 3000
 
