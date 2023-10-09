@@ -1,0 +1,19 @@
+let length =  len("hey towhid")
+
+let two = "two";
+let obj = {
+	"one": 10 - 9,
+	two: 1 + 1,
+	"thr" + "ee": 6 / 2,
+	4: 5,
+	true: 5,
+	false: 6
+}
+
+print(two, " ", obj[4])
+print("\n")
+
+
+let a = "hey towhid";
+
+println( "We received ", len(a), " arguments to our script.\n" );

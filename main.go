@@ -1,16 +1,17 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
 	"os/user"
 
+	"github.com/nexentra/aesir/importer"
 	"github.com/nexentra/aesir/repl"
 )
 
-const AESIR = 
-`
+const AESIR = `
 
 ________   _______    ________   ___   ________     
 |\   __  \ |\  ___ \  |\   ____\ |\  \ |\   __  \    
@@ -29,9 +30,24 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	
-	io.WriteString(os.Stdout, AESIR)
-	fmt.Printf("Hello %s! This is the AEsir programming language!\n",user.Username)
-	fmt.Printf("Feel free to type in commands\n")
-	repl.Start(os.Stdin, os.Stdout)
+
+	args := os.Args[1:]
+
+	if args != nil {
+		if _, err := os.Stat(args[0]); err == nil {
+			_, err := importer.Importer(string(args[0]))
+			if err != nil {
+				panic(err)
+			}
+		} else if errors.Is(err, os.ErrNotExist) {
+			fmt.Println("File does not exist")
+
+		}
+
+	} else {
+		io.WriteString(os.Stdout, AESIR)
+		fmt.Printf("Hello %s! This is the AEsir programming language!\n", user.Username)
+		fmt.Printf("Feel free to type in commands\n")
+		repl.Start(os.Stdin, os.Stdout)
+	}
 }

@@ -2,15 +2,32 @@ package evaluator
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/nexentra/aesir/object"
 )
 
 var builtins = map[string]*object.Builtin{
-	"puts": &object.Builtin{
+
+	"print": &object.Builtin{
+		Fn: func(args ...object.Object) object.Object {
+			if len(args) == 0 {
+				return newError("wrong number of arguments. got 0 arguments, want at least 1")
+			}
+
+			for _, arg := range args {
+				printData := strings.Replace(arg.Inspect(), `\n`, "\n", -1)
+				fmt.Print(printData)
+			}
+			
+			return NULL
+		},
+	},
+	"println": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
 			for _, arg := range args {
-				fmt.Println(arg.Inspect())
+				printData := strings.Replace(arg.Inspect(), `\n`, "\n", -1)
+				fmt.Println(printData)
 			}
 			return NULL
 		},
