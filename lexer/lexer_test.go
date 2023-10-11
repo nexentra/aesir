@@ -19,6 +19,10 @@ func TestNextToken(t *testing.T) {
 	!-/*5;
 	5 < 10 > 5;
 
+	6.9
+	0.5
+	0.3
+
 	if (5 < 10) {
 		return true;
 	} else {
@@ -85,6 +89,9 @@ func TestNextToken(t *testing.T) {
 		{token.GT, ">"},
 		{token.INT, "5"},
 		{token.SEMICOLON, ";"},
+		{token.FLOAT, "6.9"},
+		{token.FLOAT, "0.5"},
+		{token.FLOAT, "0.3"},
 		{token.IF, "if"},
 		{token.LPAREN, "("},
 		{token.INT, "5"},

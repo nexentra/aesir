@@ -6,9 +6,10 @@ import (
 
 type Lexer struct {
 	input        string
-	position     int  // current position in input (points to current char)
-	readPosition int  // current reading position in input (after current char)
-	ch           byte // current char under examination
+	position     int         // current position in input (points to current char)
+	readPosition int         // current reading position in input (after current char)
+	ch           byte        // current char under examination
+	prevToken    token.Token // previous token
 }
 
 func New(input string) *Lexer {
@@ -78,21 +79,21 @@ func (l *Lexer) NextToken() token.Token {
 		tok.Literal = ""
 		tok.Type = token.EOF
 	default:
-		if isLetter(l.ch) {
-			tok.Literal = l.readIdentifier()
-			tok.Type = token.LookupIdent(tok.Literal)
+		
+		if isDigit(l.ch) {
+			tok = l.readDecimal()
+			l.prevToken = tok
 			return tok
-		} else if isDigit(l.ch) {
-			tok.Type = token.INT
-			tok.Literal = l.readNumber()
-			return tok
-		} else {
-			tok = newToken(token.ILLEGAL, l.ch)
+
 		}
+		tok.Literal = l.readIdentifier()
+		tok.Type = token.LookupIdent(tok.Literal)
+		l.prevToken = tok
+
+		return tok
 	}
-
 	l.readChar()
-
+	l.prevToken = tok
 	return tok
 }
 
@@ -134,6 +135,16 @@ func (l *Lexer) readNumber() string {
 		l.readChar()
 	}
 	return l.input[position:l.position]
+}
+
+func (l *Lexer) readDecimal() token.Token {
+	integer := l.readNumber()
+	if l.ch == '.' && isDigit(l.peekChar()) {
+		l.readChar()
+		fraction := l.readNumber()
+		return token.Token{Type: token.FLOAT, Literal: integer + "." + fraction}
+	}
+	return token.Token{Type: token.INT, Literal: integer}
 }
 
 func (l *Lexer) readString() string {
