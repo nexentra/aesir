@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"hash/fnv"
+	"strconv"
 	"strings"
 
 	"github.com/nexentra/aesir/ast"
@@ -18,6 +19,7 @@ type Object interface {
 const (
 	NULL_OBJ         = "NULL"
 	INTEGER_OBJ      = "INTEGER"
+	FLOAT_OBJ        = "FLOAT"
 	STRING_OBJ       = "STRING"
 	BOOLEAN_OBJ      = "BOOLEAN"
 	RETURN_VALUE_OBJ = "RETURN_VALUE"
@@ -46,6 +48,13 @@ type Integer struct {
 
 func (i *Integer) Inspect() string  { return fmt.Sprintf("%d", i.Value) }
 func (i *Integer) Type() ObjectType { return INTEGER_OBJ }
+
+type Float struct {
+	Value float64
+}
+
+func (i *Float) Inspect() string  { return strconv.FormatFloat(i.Value, 'f', -1, 64) }
+func (i *Float) Type() ObjectType { return FLOAT_OBJ }
 
 type Boolean struct {
 	Value bool

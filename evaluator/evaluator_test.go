@@ -1,10 +1,11 @@
 package evaluator
 
 import (
+	"testing"
+
 	"github.com/nexentra/aesir/lexer"
 	"github.com/nexentra/aesir/object"
 	"github.com/nexentra/aesir/parser"
-	"testing"
 )
 
 func testEval(input string) object.Object {
@@ -42,6 +43,26 @@ func TestEvalIntegerExpression(t *testing.T) {
 	}
 }
 
+func TestEvalFloatExpression(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected float64
+	}{
+		{"5.5", 5.5},
+		{"10.10", 10.10},
+		{"-5.2", -5.2},
+		{"-10.0", -10.0},
+		{"5.2 + 5 + 5 + 5.1 - 10", 10.299999999999997},
+		{"2.2 * 2.0 * 2 * 2.3 * 2.52", 51.004799999999996},
+		{"-50.99 + 100 + -50.10", -1.0900000000000034},
+		{"5.2 * 2 + 10.01", 20.41},
+	}
+	for _, tt := range tests {
+		evaluated := testEval(tt.input)
+		testFloatObject(t, evaluated, tt.expected)
+	}
+}
+
 func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
 	result, ok := obj.(*object.Integer)
 	if !ok {
@@ -50,6 +71,20 @@ func testIntegerObject(t *testing.T, obj object.Object, expected int64) bool {
 	}
 	if result.Value != expected {
 		t.Errorf("object has wrong value. got=%d, want=%d",
+			result.Value, expected)
+		return false
+	}
+	return true
+}
+
+func testFloatObject(t *testing.T, obj object.Object, expected float64) bool {
+	result, ok := obj.(*object.Float)
+	if !ok {
+		t.Errorf("object is not Float. got=%T (%+v)", obj, obj)
+		return false
+	}
+	if result.Value != expected {
+		t.Errorf("object has wrong value. got=%f, want=%f",
 			result.Value, expected)
 		return false
 	}
