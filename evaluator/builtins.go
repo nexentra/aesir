@@ -16,7 +16,10 @@ var builtins = map[string]*object.Builtin{
 			}
 
 			for _, arg := range args {
-				printData := strings.Replace(arg.Inspect(), `\n`, "\n", -1)
+				printData := arg.Inspect()
+				if(arg.Type() == object.STRING_OBJ){
+					printData = strings.Replace(arg.Inspect(), `\n`, "\n", -1)
+				}
 				fmt.Print(printData)
 			}
 			
@@ -26,7 +29,10 @@ var builtins = map[string]*object.Builtin{
 	"println": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
 			for _, arg := range args {
-				printData := strings.Replace(arg.Inspect(), `\n`, "\n", -1)
+				printData := arg.Inspect()
+				if(arg.Type() == object.STRING_OBJ){
+					printData = strings.Replace(arg.Inspect(), `\n`, "\n", -1)
+				}
 				fmt.Println(printData)
 			}
 			return NULL
