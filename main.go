@@ -33,7 +33,7 @@ func main() {
 
 	args := os.Args[1:]
 
-	if args != nil {
+	if len(args) != 0 {
 		if _, err := os.Stat(args[0]); err == nil {
 			_, err := importer.Importer(string(args[0]))
 			if err != nil {
