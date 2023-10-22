@@ -1,14 +1,12 @@
-package repl
+package main
 
 import (
 	"bufio"
 	"fmt"
 	"io"
 
-	"github.com/nexentra/aesir/evaluator"
-	"github.com/nexentra/aesir/lexer"
+	"github.com/nexentra/aesir"
 	"github.com/nexentra/aesir/object"
-	"github.com/nexentra/aesir/parser"
 )
 
 const PROMPT = ">> "
@@ -40,18 +38,14 @@ func Start(in io.Reader, out io.Writer) {
 			return
 		}
 		line := scanner.Text()
-		l := lexer.New(line)
-		p := parser.New(l)
-		program := p.ParseProgram()
-		if len(p.Errors()) != 0 {
-			printParserErrors(out, p.Errors())
+		inspect, err := aesir.Execute(line, env)
+		if len(err) != 0 {
+			printParserErrors(out, err)
 			continue
 		}
-		evaluated := evaluator.Eval(program, env)
-		if evaluated != nil {
-			io.WriteString(out, evaluated.Inspect())
-			io.WriteString(out, "\n")
-		}
+
+		io.WriteString(out, inspect)
+		io.WriteString(out, "\n")
 	}
 }
 
