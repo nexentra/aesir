@@ -4,9 +4,9 @@ before:
     - go generate ./...
 
 builds:
-  - env:
-    - CGO_ENABLED=0
   - main: ./
+    env:
+      - CGO_ENABLED=0
     binary: dist/bin/aesir
     # skip: true
     goos:
