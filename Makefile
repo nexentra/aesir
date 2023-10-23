@@ -29,13 +29,19 @@ docker-build:
 
 docker-run:
 	if [ -d $(path) ]; then \
-		docker run -i nexentra/aesir; \
+		docker run -it --rm -i nexentra/aesir; \
 	else \
-		docker run -v $(path):$(path) nexentra/aesir $(path); \
+		docker run -it --rm -v $(path):$(path) nexentra/aesir $(path); \
 	fi
+
+docker-push: clean docker-build
+	docker push nexentra/aesir:${v}
 
 run:
 	go run main.go
+
+clean:
+	rm -rf dist
 
 release:
 	git tag -a v$(v) -m "Release v$(v)"
