@@ -1,6 +1,6 @@
 before:
   hooks:
-    # - make docker-push
+    - make build
     - go generate ./...
 
 builds:
@@ -8,7 +8,7 @@ builds:
     env:
       - CGO_ENABLED=0
     binary: dist/bin/aesir
-    # skip: true
+    skip: true
     goos:
       - linux
       - darwin
