@@ -1,14 +1,38 @@
 before:
   hooks:
+    # - make build
     - go generate ./...
 
 builds:
-  - env:
+  - main: ./
+    env:
       - CGO_ENABLED=0
+    binary: dist/bin/aesir
+    # skip: true
     goos:
       - linux
-      - windows
       - darwin
+      - windows
+
+  # - main: ./cmd/aesir-api
+  #   id: "aesir-api"
+  #   binary: aesir-api
+  #   goos:
+  #     - linux
+  #     - darwin
+  #     - windows
+
+  # - main: ./cmd/aesir-docs-desktop
+  #   id: "aesir-docs-desktop"
+  #   binary: aesir-docs-desktop
+  #   goos:
+  #     - linux
+  #     - darwin
+  #     - windows
+
+upx:
+  - enabled: true
+  - compress: best
 
 archives:
   - format: tar.gz
@@ -29,6 +53,7 @@ changelog:
     exclude:
       - "^docs:"
       - "^test:"
+
 env_files:
   gitlab_token: ~/nope
   gitea_token: ~/nope
