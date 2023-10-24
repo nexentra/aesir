@@ -1,4 +1,4 @@
-package main
+package repl
 
 import (
 	"bufio"
@@ -54,6 +54,7 @@ func Start(in io.Reader, out io.Writer) {
 		}
 	}
 }
+
 func printParserErrors(out io.Writer, errors []string) {
 	io.WriteString(out, SUSSY_BAKA)
 	io.WriteString(out, "Whoops! We ran into some aesir business here!\n")
