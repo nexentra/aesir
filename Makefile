@@ -38,7 +38,11 @@ docker-push: clean docker-build
 	docker push nexentra/aesir:${v}
 
 run:
-	go run main.go
+	if [ -d $(path) ]; then \
+		go run ${SRC}; \
+	else \
+		go run ${SRC} $(path); \
+	fi
 
 clean:
 	rm -rf dist
