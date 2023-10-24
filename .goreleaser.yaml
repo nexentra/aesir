@@ -4,7 +4,7 @@ before:
     - go generate ./...
 
 builds:
-  - main: ./
+  - main: ./cmd/aesir
     env:
       - CGO_ENABLED=0
     binary: dist/bin/aesir
