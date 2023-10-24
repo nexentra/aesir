@@ -4,7 +4,7 @@ GIT_HASH=`git rev-parse --short HEAD`
 BUILD_DATE=`date +%FT%T%z`
 
 BIN=dist/bin/aesir
-SRC=./main.go
+SRC=./cmd/aesir
 
 LDFLAGS=-w -s -X main.GitHash=${GIT_HASH} -X main.BuildDate=${BUILD_DATE}
 export CFLAGS
