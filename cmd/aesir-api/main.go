@@ -1,7 +1,28 @@
 package main
 
-import "fmt"
+import (
+	"log"
+	"net/http"
+	"os"
+
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/nexentra/aesir/internals/graph"
+)
+
+const defaultPort = "8080"
 
 func main() {
-	fmt.Println("Hello World!")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = defaultPort
+	}
+
+	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+
+	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	http.Handle("/query", srv)
+
+	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }

@@ -1,0 +1,12 @@
+type Eval {
+  snippet: String!
+  result: String!
+}
+
+input EvalInput {
+  snippet: String!
+}
+
+type Mutation {
+  EvaluateSnippet(input: EvalInput!): Eval!
+}
