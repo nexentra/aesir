@@ -7,6 +7,10 @@ input EvalInput {
   snippet: String!
 }
 
-type Mutation {
+type Query {
   EvaluateSnippet(input: EvalInput!): Eval!
+}
+
+type Subscription {
+  EvaluateSnippet: Eval!
 }

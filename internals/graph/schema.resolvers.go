@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"time"
 
 	"github.com/nexentra/aesir/evaluator"
 	"github.com/nexentra/aesir/internals/graph/model"
@@ -19,44 +20,77 @@ import (
 )
 
 // EvaluateSnippet is the resolver for the EvaluateSnippet field.
-func (r *mutationResolver) EvaluateSnippet(ctx context.Context, input model.EvalInput) (*model.Eval, error) {
+func (r *queryResolver) EvaluateSnippet(ctx context.Context, input model.EvalInput) (*model.Eval, error) {
 	old := os.Stdout // keep backup of the real stdout
 	f, w, _ := os.Pipe()
 	os.Stdout = w
 	env := object.NewEnvironment()
 	l := lexer.New(input.Snippet)
-		p := parser.New(l)
-		program := p.ParseProgram()
-		if len(p.Errors()) != 0 {
-			return &model.Eval{}, fmt.Errorf("error parsing input: %v", p.Errors())
-		}
-		evaluated := evaluator.Eval(program, env)
-		fmt.Println(evaluated.Inspect())
-		outC := make(chan string)
-			// copy the output in a separate goroutine so printing can't block indefinitely
-			go func() {
-				var buf bytes.Buffer
-				io.Copy(&buf, f)
-				outC <- buf.String()
-			}()
+	p := parser.New(l)
+	program := p.ParseProgram()
+	if len(p.Errors()) != 0 {
+		return &model.Eval{}, fmt.Errorf("error parsing input: %v", p.Errors())
+	}
+	evaluated := evaluator.Eval(program, env)
+	fmt.Println(evaluated.Inspect())
+	outC := make(chan string)
+	// copy the output in a separate goroutine so printing can't block indefinitely
+	go func() {
+		var buf bytes.Buffer
+		io.Copy(&buf, f)
+		outC <- buf.String()
+	}()
 
-			// back to normal state
-			w.Close()
-			os.Stdout = old // restoring the real stdout
-			out := <-outC
+	// back to normal state
+	w.Close()
+	os.Stdout = old // restoring the real stdout
+	out := <-outC
 
-
-
-			eval := &model.Eval{
-				Snippet: 	out,
-				Result:  "randNumber",
-			}
-			r.eval = append(r.eval, eval)
+	test = test + 1
+	eval := &model.Eval{
+		Snippet: out,
+		Result:  string(test),
+	}
+	r.Eval = append(r.Eval, eval)
 	return eval, nil
-	
 }
 
-// Mutation returns MutationResolver implementation.
-func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
+// EvaluateSnippet is the resolver for the EvaluateSnippet field.
+func (r *subscriptionResolver) EvaluateSnippet(ctx context.Context) (<-chan *model.Eval, error) {
+	ch := make(chan *model.Eval)
 
-type mutationResolver struct{ *Resolver }
+	go func() {
+		defer close(ch)
+
+		for {
+			time.Sleep(1 * time.Second)
+
+			currentTime := time.Now()
+
+			t := &model.Eval{
+				Snippet: currentTime.String(),
+				Result:  string(test),
+			}
+
+			select {
+			case <-ctx.Done():
+				fmt.Println("Subscription closed.")
+				return
+
+			case ch <- t:
+				// Our message went through, do nothing
+			}
+
+		}
+	}()
+	return ch, nil
+}
+
+// Query returns QueryResolver implementation.
+func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
+
+// Subscription returns SubscriptionResolver implementation.
+func (r *Resolver) Subscription() SubscriptionResolver { return &subscriptionResolver{r} }
+
+type queryResolver struct{ *Resolver }
+type subscriptionResolver struct{ *Resolver }
