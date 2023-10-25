@@ -5,6 +5,7 @@ BUILD_DATE=`date +%FT%T%z`
 
 BIN=dist/bin/aesir
 SRC=./cmd/aesir
+SRC_API=./cmd/aesir-api
 
 LDFLAGS=-w -s -X main.GitHash=${GIT_HASH} -X main.BuildDate=${BUILD_DATE}
 export CFLAGS
@@ -42,6 +43,13 @@ run:
 		go run ${SRC}; \
 	else \
 		go run ${SRC} $(path); \
+	fi
+
+run-api:
+	if [ -d $(port) ]; then \
+		go run ${SRC_API}; \
+	else \
+		go run ${SRC_API} -port=$(port); \
 	fi
 
 clean:

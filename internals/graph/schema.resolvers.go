@@ -31,7 +31,7 @@ func (r *mutationResolver) EvaluateSnippet(ctx context.Context, input model.Eval
 			return &model.Eval{}, fmt.Errorf("error parsing input: %v", p.Errors())
 		}
 		evaluated := evaluator.Eval(program, env)
-		evaluated.Inspect()
+		fmt.Println(evaluated.Inspect())
 		outC := make(chan string)
 			// copy the output in a separate goroutine so printing can't block indefinitely
 			go func() {
@@ -45,7 +45,6 @@ func (r *mutationResolver) EvaluateSnippet(ctx context.Context, input model.Eval
 			os.Stdout = old // restoring the real stdout
 			out := <-outC
 
-			fmt.Print(out)
 
 
 			eval := &model.Eval{
@@ -55,7 +54,6 @@ func (r *mutationResolver) EvaluateSnippet(ctx context.Context, input model.Eval
 			r.eval = append(r.eval, eval)
 	return eval, nil
 	
-		return &model.Eval{}, fmt.Errorf("no print statement found")
 }
 
 // Mutation returns MutationResolver implementation.
