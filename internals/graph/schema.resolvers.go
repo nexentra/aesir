@@ -7,15 +7,28 @@ package graph
 import (
 	"context"
 
+	"github.com/nexentra/aesir/evaluator"
 	"github.com/nexentra/aesir/internals/graph/model"
+	"github.com/nexentra/aesir/lexer"
+	"github.com/nexentra/aesir/object"
+	"github.com/nexentra/aesir/parser"
 )
 
 // EvaluateSnippet is the resolver for the EvaluateSnippet field.
 func (r *mutationResolver) EvaluateSnippet(ctx context.Context, input model.EvalInput) (*model.Eval, error) {
-	randNumber := input.Snippet
+	env := object.NewEnvironment()
+	l := lexer.New(input.Snippet)
+		p := parser.New(l)
+		program := p.ParseProgram()
+		if len(p.Errors()) != 0 {
+			return nil, nil
+		}
+		evaluated := evaluator.Eval(program, env)
+	
+
 	eval := &model.Eval{
-		Snippet: randNumber,
-		Result:  randNumber,
+		Snippet: 	evaluated.Inspect(),
+		Result:  "randNumber",
 	}
 	r.eval = append(r.eval, eval)
 	return eval, nil

@@ -1,7 +1,10 @@
 package evaluator
 
 import (
+	"bytes"
 	"fmt"
+	"io"
+	"os"
 	"strings"
 
 	"github.com/nexentra/aesir/object"
@@ -15,27 +18,66 @@ var builtins = map[string]*object.Builtin{
 				return newError("wrong number of arguments. got 0 arguments, want at least 1")
 			}
 
+			old := os.Stdout // keep backup of the real stdout
+			r, w, _ := os.Pipe()
+			os.Stdout = w
+
 			for _, arg := range args {
 				printData := arg.Inspect()
-				if(arg.Type() == object.STRING_OBJ){
+				if arg.Type() == object.STRING_OBJ {
 					printData = strings.Replace(arg.Inspect(), `\n`, "\n", -1)
 				}
 				fmt.Print(printData)
 			}
-			
-			return NULL
+
+			outC := make(chan string)
+			// copy the output in a separate goroutine so printing can't block indefinitely
+			go func() {
+				var buf bytes.Buffer
+				io.Copy(&buf, r)
+				outC <- buf.String()
+			}()
+
+			// back to normal state
+			w.Close()
+			os.Stdout = old // restoring the real stdout
+			out := <-outC
+
+			return &object.String{Value: out}
 		},
 	},
 	"println": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
+			if len(args) == 0 {
+				return newError("wrong number of arguments. got 0 arguments, want at least 1")
+			}
+
+			old := os.Stdout // keep backup of the real stdout
+			r, w, _ := os.Pipe()
+			os.Stdout = w
+
 			for _, arg := range args {
 				printData := arg.Inspect()
-				if(arg.Type() == object.STRING_OBJ){
+				if arg.Type() == object.STRING_OBJ {
 					printData = strings.Replace(arg.Inspect(), `\n`, "\n", -1)
 				}
 				fmt.Println(printData)
 			}
-			return NULL
+			
+			outC := make(chan string)
+			// copy the output in a separate goroutine so printing can't block indefinitely
+			go func() {
+				var buf bytes.Buffer
+				io.Copy(&buf, r)
+				outC <- buf.String()
+			}()
+
+			// back to normal state
+			w.Close()
+			os.Stdout = old // restoring the real stdout
+			out := <-outC
+
+			return &object.String{Value: out}
 		},
 	},
 	"len": &object.Builtin{

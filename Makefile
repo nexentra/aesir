@@ -25,7 +25,7 @@ docker-build:
 		--build-arg BUILD_REV="${GIT_HASH}" \
 		--build-arg BUILD_DATE="${BUILD_DATE}" \
 		-t nexentra/aesir:latest \
-		-f Dockerfile .
+		-f Dockerfile.scratch .
 
 docker-run:
 	if [ -d $(path) ]; then \
