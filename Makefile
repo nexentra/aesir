@@ -52,8 +52,8 @@ run-api:
 		go run ${SRC_API} -port=$(port); \
 	fi
 
-gql-gen:
-	go run github.com/99designs/gqlgen generate
+gen:
+	go generate ./...
 
 clean:
 	rm -rf dist

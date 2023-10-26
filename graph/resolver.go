@@ -3,7 +3,8 @@ package graph
 import (
 	"sync"
 
-	"github.com/nexentra/aesir/internals/graph/model"
+	"github.com/nexentra/aesir/ent"
+	"github.com/nexentra/aesir/graph/model"
 )
 
 // This file will not be regenerated automatically.
@@ -14,4 +15,5 @@ type Resolver struct {
 	Eval          []*model.Eval
 	EvalObservers map[string]chan []*model.Eval
 	mu            sync.Mutex
+	Client        *ent.Client
 }

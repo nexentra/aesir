@@ -10,3 +10,8 @@ type Eval struct {
 type EvalInput struct {
 	Snippet string `json:"snippet"`
 }
+
+type NewTodo struct {
+	Text     string `json:"text"`
+	UserName string `json:"userName"`
+}
