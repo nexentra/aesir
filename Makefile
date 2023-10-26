@@ -9,7 +9,7 @@ SRC_API=./cmd/aesir-api
 
 LDFLAGS=-w -s -X main.GitHash=${GIT_HASH} -X main.BuildDate=${BUILD_DATE}
 export CFLAGS
-export CGO_ENABLED=0
+export CGO_ENABLED=1
 export GOOS=linux
 export GOARCH=amd64
 
@@ -54,6 +54,9 @@ run-api:
 
 gen:
 	go generate ./...
+
+vis-graph:
+	go run -mod=mod ariga.io/entviz ./ent/schema 
 
 clean:
 	rm -rf dist

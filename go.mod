@@ -12,6 +12,7 @@ require (
 
 require (
 	ariga.io/atlas v0.15.0 // indirect
+	ariga.io/entviz v0.0.0-20230419175438-29569ec22220 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
