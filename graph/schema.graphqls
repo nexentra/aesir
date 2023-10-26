@@ -1,39 +1,20 @@
 type Eval {
   snippet: String!
-  result: String!
+  result: [String!]
+  time: String!
 }
 
 input EvalInput {
   snippet: String!
 }
 
-type Query {
-  EvaluateSnippet(input: EvalInput!): Eval!
-  todos: [Todo!]!
-  userTodos(name: String!): [Todo!]!
-}
+# type Query {
+# }
 
 type Subscription {
-  GetEvaluatedSnippets: Eval!
-}
-
-type Todo {
-  id: ID!
-  text: String!
-  done: Boolean!
-  user: User!
-}
-
-type User {
-  id: ID!
-  name: String!
-}
-
-input NewTodo {
-  text: String!
-  userName: String!
+  GetEvaluatedSnippets: [Eval!]
 }
 
 type Mutation {
-  createTodo(input: NewTodo!): Todo!
+  EvaluateSnippet(input: EvalInput!): Eval!
 }

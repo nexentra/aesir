@@ -12,10 +12,8 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
-	// Todo is the client for interacting with the Todo builders.
-	Todo *TodoClient
-	// User is the client for interacting with the User builders.
-	User *UserClient
+	// Eval is the client for interacting with the Eval builders.
+	Eval *EvalClient
 
 	// lazily loaded.
 	client     *Client
@@ -147,8 +145,7 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
-	tx.Todo = NewTodoClient(tx.config)
-	tx.User = NewUserClient(tx.config)
+	tx.Eval = NewEvalClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.
@@ -158,7 +155,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: Todo.QueryXXX(), the query will be executed
+// applies a query, for example: Eval.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

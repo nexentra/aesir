@@ -8,33 +8,22 @@ import (
 )
 
 var (
-	// TodosColumns holds the columns for the "todos" table.
-	TodosColumns = []*schema.Column{
+	// EvalsColumns holds the columns for the "evals" table.
+	EvalsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "text", Type: field.TypeString},
-		{Name: "done", Type: field.TypeBool, Default: false},
+		{Name: "snippet", Type: field.TypeString},
+		{Name: "result", Type: field.TypeJSON},
+		{Name: "time", Type: field.TypeString},
 	}
-	// TodosTable holds the schema information for the "todos" table.
-	TodosTable = &schema.Table{
-		Name:       "todos",
-		Columns:    TodosColumns,
-		PrimaryKey: []*schema.Column{TodosColumns[0]},
-	}
-	// UsersColumns holds the columns for the "users" table.
-	UsersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "name", Type: field.TypeString, Unique: true},
-	}
-	// UsersTable holds the schema information for the "users" table.
-	UsersTable = &schema.Table{
-		Name:       "users",
-		Columns:    UsersColumns,
-		PrimaryKey: []*schema.Column{UsersColumns[0]},
+	// EvalsTable holds the schema information for the "evals" table.
+	EvalsTable = &schema.Table{
+		Name:       "evals",
+		Columns:    EvalsColumns,
+		PrimaryKey: []*schema.Column{EvalsColumns[0]},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
-		TodosTable,
-		UsersTable,
+		EvalsTable,
 	}
 )
 

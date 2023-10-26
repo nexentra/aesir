@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/nexentra/aesir/ent"
@@ -21,13 +22,8 @@ import (
 	"github.com/nexentra/aesir/parser"
 )
 
-// CreateTodo is the resolver for the createTodo field.
-func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*ent.Todo, error) {
-	panic(fmt.Errorf("not implemented: CreateTodo - createTodo"))
-}
-
 // EvaluateSnippet is the resolver for the EvaluateSnippet field.
-func (r *queryResolver) EvaluateSnippet(ctx context.Context, input model.EvalInput) (*model.Eval, error) {
+func (r *mutationResolver) EvaluateSnippet(ctx context.Context, input model.EvalInput) (*ent.Eval, error) {
 	old := os.Stdout // keep backup of the real stdout
 	f, w, _ := os.Pipe()
 	os.Stdout = w
@@ -36,7 +32,7 @@ func (r *queryResolver) EvaluateSnippet(ctx context.Context, input model.EvalInp
 	p := parser.New(l)
 	program := p.ParseProgram()
 	if len(p.Errors()) != 0 {
-		return &model.Eval{}, fmt.Errorf("error parsing input: %v", p.Errors())
+		return &ent.Eval{}, fmt.Errorf("error parsing input: %v", p.Errors())
 	}
 	evaluated := evaluator.Eval(program, env)
 	fmt.Println(evaluated.Inspect())
@@ -53,27 +49,16 @@ func (r *queryResolver) EvaluateSnippet(ctx context.Context, input model.EvalInp
 	os.Stdout = old // restoring the real stdout
 	out := <-outC
 
-	eval := &model.Eval{
-		Snippet: out,
-		Result:  string("test"),
-	}
-	r.Eval = append(r.Eval, eval)
-	return eval, nil
-}
-
-// Todos is the resolver for the todos field.
-func (r *queryResolver) Todos(ctx context.Context) ([]*ent.Todo, error) {
-	panic(fmt.Errorf("not implemented: Todos - todos"))
-}
-
-// UserTodos is the resolver for the userTodos field.
-func (r *queryResolver) UserTodos(ctx context.Context, name string) ([]*ent.Todo, error) {
-	panic(fmt.Errorf("not implemented: UserTodos - userTodos"))
+	return r.Client.Eval.Create().
+		SetSnippet(out).
+		SetResult(strings.Split(out, "\n")).
+		SetTime(time.Now().Local().String()).
+		Save(ctx)
 }
 
 // GetEvaluatedSnippets is the resolver for the GetEvaluatedSnippets field.
-func (r *subscriptionResolver) GetEvaluatedSnippets(ctx context.Context) (<-chan *model.Eval, error) {
-	ch := make(chan *model.Eval)
+func (r *subscriptionResolver) GetEvaluatedSnippets(ctx context.Context) (<-chan []*ent.Eval, error) {
+	ch := make(chan []*ent.Eval)
 
 	go func() {
 		defer close(ch)
@@ -81,11 +66,11 @@ func (r *subscriptionResolver) GetEvaluatedSnippets(ctx context.Context) (<-chan
 		for {
 			time.Sleep(1 * time.Second)
 
-			currentTime := time.Now()
-
-			t := &model.Eval{
-				Snippet: currentTime.String(),
-				Result:  string("test"),
+			t, err := r.Client.Eval.Query().All(ctx)
+			if err != nil {
+				fmt.Println("Error getting evaluated snippets. ERROR: ", err)
+				// close(ch)
+				// return
 			}
 
 			select {
@@ -102,24 +87,20 @@ func (r *subscriptionResolver) GetEvaluatedSnippets(ctx context.Context) (<-chan
 	return ch, nil
 }
 
-// User is the resolver for the user field.
-func (r *todoResolver) User(ctx context.Context, obj *ent.Todo) (*ent.User, error) {
-	panic(fmt.Errorf("not implemented: User - user"))
-}
-
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
-
-// Query returns generated.QueryResolver implementation.
-func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
 // Subscription returns generated.SubscriptionResolver implementation.
 func (r *Resolver) Subscription() generated.SubscriptionResolver { return &subscriptionResolver{r} }
 
-// Todo returns generated.TodoResolver implementation.
-func (r *Resolver) Todo() generated.TodoResolver { return &todoResolver{r} }
-
 type mutationResolver struct{ *Resolver }
-type queryResolver struct{ *Resolver }
 type subscriptionResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
+type queryResolver struct{ *Resolver }
 type todoResolver struct{ *Resolver }

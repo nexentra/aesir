@@ -14,8 +14,7 @@ import (
 	"entgo.io/ent/dialect/sql/schema"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/hashicorp/go-multierror"
-	"github.com/nexentra/aesir/ent/todo"
-	"github.com/nexentra/aesir/ent/user"
+	"github.com/nexentra/aesir/ent/eval"
 	"golang.org/x/sync/semaphore"
 )
 
@@ -25,10 +24,7 @@ type Noder interface {
 }
 
 // IsNode implements the Node interface check for GQLGen.
-func (n *Todo) IsNode() {}
-
-// IsNode implements the Node interface check for GQLGen.
-func (n *User) IsNode() {}
+func (n *Eval) IsNode() {}
 
 var errNodeInvalidID = &NotFoundError{"node"}
 
@@ -88,22 +84,10 @@ func (c *Client) Noder(ctx context.Context, id int, opts ...NodeOption) (_ Noder
 
 func (c *Client) noder(ctx context.Context, table string, id int) (Noder, error) {
 	switch table {
-	case todo.Table:
-		query := c.Todo.Query().
-			Where(todo.ID(id))
-		query, err := query.CollectFields(ctx, "Todo")
-		if err != nil {
-			return nil, err
-		}
-		n, err := query.Only(ctx)
-		if err != nil {
-			return nil, err
-		}
-		return n, nil
-	case user.Table:
-		query := c.User.Query().
-			Where(user.ID(id))
-		query, err := query.CollectFields(ctx, "User")
+	case eval.Table:
+		query := c.Eval.Query().
+			Where(eval.ID(id))
+		query, err := query.CollectFields(ctx, "Eval")
 		if err != nil {
 			return nil, err
 		}
@@ -185,26 +169,10 @@ func (c *Client) noders(ctx context.Context, table string, ids []int) ([]Noder, 
 		idmap[id] = append(idmap[id], &noders[i])
 	}
 	switch table {
-	case todo.Table:
-		query := c.Todo.Query().
-			Where(todo.IDIn(ids...))
-		query, err := query.CollectFields(ctx, "Todo")
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
-	case user.Table:
-		query := c.User.Query().
-			Where(user.IDIn(ids...))
-		query, err := query.CollectFields(ctx, "User")
+	case eval.Table:
+		query := c.Eval.Query().
+			Where(eval.IDIn(ids...))
+		query, err := query.CollectFields(ctx, "Eval")
 		if err != nil {
 			return nil, err
 		}

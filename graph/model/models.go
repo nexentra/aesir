@@ -2,16 +2,6 @@
 
 package model
 
-type Eval struct {
-	Snippet string `json:"snippet"`
-	Result  string `json:"result"`
-}
-
 type EvalInput struct {
 	Snippet string `json:"snippet"`
-}
-
-type NewTodo struct {
-	Text     string `json:"text"`
-	UserName string `json:"userName"`
 }

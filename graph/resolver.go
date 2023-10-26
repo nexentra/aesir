@@ -4,7 +4,6 @@ import (
 	"sync"
 
 	"github.com/nexentra/aesir/ent"
-	"github.com/nexentra/aesir/graph/model"
 )
 
 // This file will not be regenerated automatically.
@@ -12,8 +11,7 @@ import (
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	Eval          []*model.Eval
-	EvalObservers map[string]chan []*model.Eval
+	EvalObservers map[string]chan []*ent.Eval
 	mu            sync.Mutex
 	Client        *ent.Client
 }

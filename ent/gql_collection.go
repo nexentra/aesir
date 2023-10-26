@@ -7,40 +7,44 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/nexentra/aesir/ent/todo"
-	"github.com/nexentra/aesir/ent/user"
+	"github.com/nexentra/aesir/ent/eval"
 )
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
-func (t *TodoQuery) CollectFields(ctx context.Context, satisfies ...string) (*TodoQuery, error) {
+func (e *EvalQuery) CollectFields(ctx context.Context, satisfies ...string) (*EvalQuery, error) {
 	fc := graphql.GetFieldContext(ctx)
 	if fc == nil {
-		return t, nil
+		return e, nil
 	}
-	if err := t.collectField(ctx, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
+	if err := e.collectField(ctx, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
 		return nil, err
 	}
-	return t, nil
+	return e, nil
 }
 
-func (t *TodoQuery) collectField(ctx context.Context, opCtx *graphql.OperationContext, collected graphql.CollectedField, path []string, satisfies ...string) error {
+func (e *EvalQuery) collectField(ctx context.Context, opCtx *graphql.OperationContext, collected graphql.CollectedField, path []string, satisfies ...string) error {
 	path = append([]string(nil), path...)
 	var (
 		unknownSeen    bool
-		fieldSeen      = make(map[string]struct{}, len(todo.Columns))
-		selectedFields = []string{todo.FieldID}
+		fieldSeen      = make(map[string]struct{}, len(eval.Columns))
+		selectedFields = []string{eval.FieldID}
 	)
 	for _, field := range graphql.CollectFields(opCtx, collected.Selections, satisfies) {
 		switch field.Name {
-		case "text":
-			if _, ok := fieldSeen[todo.FieldText]; !ok {
-				selectedFields = append(selectedFields, todo.FieldText)
-				fieldSeen[todo.FieldText] = struct{}{}
+		case "snippet":
+			if _, ok := fieldSeen[eval.FieldSnippet]; !ok {
+				selectedFields = append(selectedFields, eval.FieldSnippet)
+				fieldSeen[eval.FieldSnippet] = struct{}{}
 			}
-		case "done":
-			if _, ok := fieldSeen[todo.FieldDone]; !ok {
-				selectedFields = append(selectedFields, todo.FieldDone)
-				fieldSeen[todo.FieldDone] = struct{}{}
+		case "result":
+			if _, ok := fieldSeen[eval.FieldResult]; !ok {
+				selectedFields = append(selectedFields, eval.FieldResult)
+				fieldSeen[eval.FieldResult] = struct{}{}
+			}
+		case "time":
+			if _, ok := fieldSeen[eval.FieldTime]; !ok {
+				selectedFields = append(selectedFields, eval.FieldTime)
+				fieldSeen[eval.FieldTime] = struct{}{}
 			}
 		case "id":
 		case "__typename":
@@ -49,83 +53,19 @@ func (t *TodoQuery) collectField(ctx context.Context, opCtx *graphql.OperationCo
 		}
 	}
 	if !unknownSeen {
-		t.Select(selectedFields...)
+		e.Select(selectedFields...)
 	}
 	return nil
 }
 
-type todoPaginateArgs struct {
+type evalPaginateArgs struct {
 	first, last   *int
 	after, before *Cursor
-	opts          []TodoPaginateOption
+	opts          []EvalPaginateOption
 }
 
-func newTodoPaginateArgs(rv map[string]any) *todoPaginateArgs {
-	args := &todoPaginateArgs{}
-	if rv == nil {
-		return args
-	}
-	if v := rv[firstField]; v != nil {
-		args.first = v.(*int)
-	}
-	if v := rv[lastField]; v != nil {
-		args.last = v.(*int)
-	}
-	if v := rv[afterField]; v != nil {
-		args.after = v.(*Cursor)
-	}
-	if v := rv[beforeField]; v != nil {
-		args.before = v.(*Cursor)
-	}
-	return args
-}
-
-// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
-func (u *UserQuery) CollectFields(ctx context.Context, satisfies ...string) (*UserQuery, error) {
-	fc := graphql.GetFieldContext(ctx)
-	if fc == nil {
-		return u, nil
-	}
-	if err := u.collectField(ctx, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
-		return nil, err
-	}
-	return u, nil
-}
-
-func (u *UserQuery) collectField(ctx context.Context, opCtx *graphql.OperationContext, collected graphql.CollectedField, path []string, satisfies ...string) error {
-	path = append([]string(nil), path...)
-	var (
-		unknownSeen    bool
-		fieldSeen      = make(map[string]struct{}, len(user.Columns))
-		selectedFields = []string{user.FieldID}
-	)
-	for _, field := range graphql.CollectFields(opCtx, collected.Selections, satisfies) {
-		switch field.Name {
-		case "name":
-			if _, ok := fieldSeen[user.FieldName]; !ok {
-				selectedFields = append(selectedFields, user.FieldName)
-				fieldSeen[user.FieldName] = struct{}{}
-			}
-		case "id":
-		case "__typename":
-		default:
-			unknownSeen = true
-		}
-	}
-	if !unknownSeen {
-		u.Select(selectedFields...)
-	}
-	return nil
-}
-
-type userPaginateArgs struct {
-	first, last   *int
-	after, before *Cursor
-	opts          []UserPaginateOption
-}
-
-func newUserPaginateArgs(rv map[string]any) *userPaginateArgs {
-	args := &userPaginateArgs{}
+func newEvalPaginateArgs(rv map[string]any) *evalPaginateArgs {
+	args := &evalPaginateArgs{}
 	if rv == nil {
 		return args
 	}

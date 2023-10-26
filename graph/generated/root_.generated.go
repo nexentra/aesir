@@ -34,9 +34,7 @@ type Config struct {
 
 type ResolverRoot interface {
 	Mutation() MutationResolver
-	Query() QueryResolver
 	Subscription() SubscriptionResolver
-	Todo() TodoResolver
 }
 
 type DirectiveRoot struct {
@@ -46,32 +44,18 @@ type ComplexityRoot struct {
 	Eval struct {
 		Result  func(childComplexity int) int
 		Snippet func(childComplexity int) int
+		Time    func(childComplexity int) int
 	}
 
 	Mutation struct {
-		CreateTodo func(childComplexity int, input model.NewTodo) int
+		EvaluateSnippet func(childComplexity int, input model.EvalInput) int
 	}
 
 	Query struct {
-		EvaluateSnippet func(childComplexity int, input model.EvalInput) int
-		Todos           func(childComplexity int) int
-		UserTodos       func(childComplexity int, name string) int
 	}
 
 	Subscription struct {
 		GetEvaluatedSnippets func(childComplexity int) int
-	}
-
-	Todo struct {
-		Done func(childComplexity int) int
-		ID   func(childComplexity int) int
-		Text func(childComplexity int) int
-		User func(childComplexity int) int
-	}
-
-	User struct {
-		ID   func(childComplexity int) int
-		Name func(childComplexity int) int
 	}
 }
 
@@ -108,48 +92,24 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Eval.Snippet(childComplexity), true
 
-	case "Mutation.createTodo":
-		if e.complexity.Mutation.CreateTodo == nil {
+	case "Eval.time":
+		if e.complexity.Eval.Time == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_createTodo_args(context.TODO(), rawArgs)
+		return e.complexity.Eval.Time(childComplexity), true
+
+	case "Mutation.EvaluateSnippet":
+		if e.complexity.Mutation.EvaluateSnippet == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_EvaluateSnippet_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateTodo(childComplexity, args["input"].(model.NewTodo)), true
-
-	case "Query.EvaluateSnippet":
-		if e.complexity.Query.EvaluateSnippet == nil {
-			break
-		}
-
-		args, err := ec.field_Query_EvaluateSnippet_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.EvaluateSnippet(childComplexity, args["input"].(model.EvalInput)), true
-
-	case "Query.todos":
-		if e.complexity.Query.Todos == nil {
-			break
-		}
-
-		return e.complexity.Query.Todos(childComplexity), true
-
-	case "Query.userTodos":
-		if e.complexity.Query.UserTodos == nil {
-			break
-		}
-
-		args, err := ec.field_Query_userTodos_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.UserTodos(childComplexity, args["name"].(string)), true
+		return e.complexity.Mutation.EvaluateSnippet(childComplexity, args["input"].(model.EvalInput)), true
 
 	case "Subscription.GetEvaluatedSnippets":
 		if e.complexity.Subscription.GetEvaluatedSnippets == nil {
@@ -157,48 +117,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Subscription.GetEvaluatedSnippets(childComplexity), true
-
-	case "Todo.done":
-		if e.complexity.Todo.Done == nil {
-			break
-		}
-
-		return e.complexity.Todo.Done(childComplexity), true
-
-	case "Todo.id":
-		if e.complexity.Todo.ID == nil {
-			break
-		}
-
-		return e.complexity.Todo.ID(childComplexity), true
-
-	case "Todo.text":
-		if e.complexity.Todo.Text == nil {
-			break
-		}
-
-		return e.complexity.Todo.Text(childComplexity), true
-
-	case "Todo.user":
-		if e.complexity.Todo.User == nil {
-			break
-		}
-
-		return e.complexity.Todo.User(childComplexity), true
-
-	case "User.id":
-		if e.complexity.User.ID == nil {
-			break
-		}
-
-		return e.complexity.User.ID(childComplexity), true
-
-	case "User.name":
-		if e.complexity.User.Name == nil {
-			break
-		}
-
-		return e.complexity.User.Name(childComplexity), true
 
 	}
 	return 0, false
@@ -209,7 +127,6 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputEvalInput,
-		ec.unmarshalInputNewTodo,
 	)
 	first := true
 
@@ -326,42 +243,23 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 var sources = []*ast.Source{
 	{Name: "../schema.graphqls", Input: `type Eval {
   snippet: String!
-  result: String!
+  result: [String!]
+  time: String!
 }
 
 input EvalInput {
   snippet: String!
 }
 
-type Query {
-  EvaluateSnippet(input: EvalInput!): Eval!
-  todos: [Todo!]!
-  userTodos(name: String!): [Todo!]!
-}
+# type Query {
+# }
 
 type Subscription {
-  GetEvaluatedSnippets: Eval!
-}
-
-type Todo {
-  id: ID!
-  text: String!
-  done: Boolean!
-  user: User!
-}
-
-type User {
-  id: ID!
-  name: String!
-}
-
-input NewTodo {
-  text: String!
-  userName: String!
+  GetEvaluatedSnippets: [Eval!]
 }
 
 type Mutation {
-  createTodo(input: NewTodo!): Todo!
+  EvaluateSnippet(input: EvalInput!): Eval!
 }
 `, BuiltIn: false},
 }
