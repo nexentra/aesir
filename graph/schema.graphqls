@@ -1,0 +1,20 @@
+type Eval {
+  snippet: String!
+  result: [String!]
+  time: String!
+}
+
+input EvalInput {
+  snippet: String!
+}
+
+# type Query {
+# }
+
+type Subscription {
+  GetEvaluatedSnippets: [Eval!]
+}
+
+type Mutation {
+  EvaluateSnippet(input: EvalInput!): Eval!
+}

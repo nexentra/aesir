@@ -41,7 +41,7 @@ func Importer(dir string) ([]string, error) {
 				fmt.Println(p.Errors())
 			}
 			evaluated := evaluator.Eval(program, env)
-			evaluated.Inspect()
+			fmt.Println(evaluated.Inspect())
 		}
 		return nil
 	})

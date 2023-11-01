@@ -5,10 +5,11 @@ BUILD_DATE=`date +%FT%T%z`
 
 BIN=dist/bin/aesir
 SRC=./cmd/aesir
+SRC_API=./cmd/aesir-api
 
 LDFLAGS=-w -s -X main.GitHash=${GIT_HASH} -X main.BuildDate=${BUILD_DATE}
 export CFLAGS
-export CGO_ENABLED=0
+export CGO_ENABLED=1
 export GOOS=linux
 export GOARCH=amd64
 
@@ -17,7 +18,7 @@ vet:
 	go vet ./...
 
 build: vet
-	go build -ldflags "${LDFLAGS}" -o "${BIN}" "${SRC}"
+	go build -ldflags "${LDFLAGS}" -o "${BIN}" $(SRC)
 
 docker-build:
 	docker build \
@@ -25,7 +26,7 @@ docker-build:
 		--build-arg BUILD_REV="${GIT_HASH}" \
 		--build-arg BUILD_DATE="${BUILD_DATE}" \
 		-t nexentra/aesir:latest \
-		-f Dockerfile .
+		-f Dockerfile.scratch .
 
 docker-run:
 	if [ -d $(path) ]; then \
@@ -43,6 +44,19 @@ run:
 	else \
 		go run ${SRC} $(path); \
 	fi
+
+run-api:
+	if [ -d $(port) ]; then \
+		go run ${SRC_API}; \
+	else \
+		go run ${SRC_API} -port=$(port); \
+	fi
+
+gen:
+	go generate ./...
+
+vis-graph:
+	go run -mod=mod ariga.io/entviz ./ent/schema 
 
 clean:
 	rm -rf dist

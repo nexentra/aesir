@@ -8,7 +8,7 @@ RUN apt-get update -y \
 ADD . /go/src/github/nexentra/aesir
 WORKDIR /go/src/github/nexentra/aesir
 
-RUN make build
+RUN make build SRC=./cmd/aesir
 
 FROM scratch
 

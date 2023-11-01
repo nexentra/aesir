@@ -17,25 +17,30 @@ var builtins = map[string]*object.Builtin{
 
 			for _, arg := range args {
 				printData := arg.Inspect()
-				if(arg.Type() == object.STRING_OBJ){
+				if arg.Type() == object.STRING_OBJ {
 					printData = strings.Replace(arg.Inspect(), `\n`, "\n", -1)
 				}
 				fmt.Print(printData)
 			}
-			
-			return NULL
+
+return NULL
 		},
 	},
 	"println": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
+			if len(args) == 0 {
+				return newError("wrong number of arguments. got 0 arguments, want at least 1")
+			}
+
 			for _, arg := range args {
 				printData := arg.Inspect()
-				if(arg.Type() == object.STRING_OBJ){
+				if arg.Type() == object.STRING_OBJ {
 					printData = strings.Replace(arg.Inspect(), `\n`, "\n", -1)
 				}
 				fmt.Println(printData)
 			}
-			return NULL
+			
+return NULL
 		},
 	},
 	"len": &object.Builtin{
