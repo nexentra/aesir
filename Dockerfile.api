@@ -1,0 +1,17 @@
+FROM golang:1.21.3 AS builder
+
+WORKDIR /go/src/github.com/nexentra/aesir
+COPY . .
+
+RUN GO111MODULE=on go get ./...
+RUN GO111MODULE=on go generate ./...
+RUN GO111MODULE=on CGO_ENABLED=1 go build -o aesir ./cmd/aesir-api
+
+CMD /go/src/github.com/nexentra/aesir/aesir
+
+# FROM golang:1.21.3-alpine
+
+# WORKDIR /app/
+# COPY --from=builder /go/src/github.com/nexentra/aesir/aesir .
+
+# CMD /app/aesir

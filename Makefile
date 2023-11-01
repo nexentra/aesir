@@ -18,7 +18,7 @@ vet:
 	go vet ./...
 
 build: vet
-	go build -ldflags "${LDFLAGS}" -o "${BIN}" "${SRC}"
+	go build -ldflags "${LDFLAGS}" -o "${BIN}" $(SRC)
 
 docker-build:
 	docker build \
