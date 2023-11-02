@@ -7,6 +7,8 @@ RUN GO111MODULE=on go get ./...
 RUN GO111MODULE=on go generate ./...
 RUN GO111MODULE=on CGO_ENABLED=1 go build -o aesir ./cmd/aesir-api
 
+EXPOSE 8080
+
 CMD /go/src/github.com/nexentra/aesir/aesir
 
 # FROM golang:1.21.3-alpine
