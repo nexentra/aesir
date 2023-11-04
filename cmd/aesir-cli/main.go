@@ -7,12 +7,15 @@ package main
 // implementing a progress bar from scratch here.
 
 import (
+	"errors"
 	"fmt"
 	"math"
+	"os"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/charmbracelet/bubbles/filepicker"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/fogleman/ease"
 	"github.com/lucasb-eyer/go-colorful"
@@ -39,11 +42,21 @@ var (
 )
 
 func main() {
-	initialModel := model{0, false, 10, 0, 0, false, false}
-	p := tea.NewProgram(initialModel)
-	if _, err := p.Run(); err != nil {
+	var tm tea.Model
+	var err error
+	fp := filepicker.New()
+	fp.AllowedTypes = []string{".mod", ".sum", ".go", ".txt", ".md"}
+	fp.CurrentDirectory, _ = os.UserHomeDir()
+	// fp.ShowHidden = true
+
+	initialModel := model{fp, "", 0, false, 10, 0, 0, false, false}
+
+	p := tea.NewProgram(&initialModel, tea.WithOutput(os.Stderr))
+	if tm, err = p.Run(); err != nil {
 		fmt.Println("could not start program:", err)
 	}
+	mm := tm.(model)
+	fmt.Println("\n  You selected: " + initialModel.Filepicker.Styles.Selected.Render(mm.selectedFile) + "\n")
 }
 
 type (
@@ -64,17 +77,19 @@ func frame() tea.Cmd {
 }
 
 type model struct {
-	Choice   int
-	Chosen   bool
-	Ticks    int
-	Frames   int
-	Progress float64
-	Loaded   bool
-	Quitting bool
+	Filepicker   filepicker.Model
+	selectedFile string
+	Choice       int
+	Chosen       bool
+	Ticks        int
+	Frames       int
+	Progress     float64
+	Loaded       bool
+	Quitting     bool
 }
 
 func (m model) Init() tea.Cmd {
-	return tick()
+	return tea.Batch(tick(), m.Filepicker.Init())
 }
 
 // Main update function.
@@ -87,12 +102,30 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		}
 	}
+	// var cmd tea.Cmd
+	m.Filepicker, _ = m.Filepicker.Update(msg)
+	// Did the user select a file?
+	// if didSelect, path := m.Filepicker.DidSelectFile(msg); didSelect {
+	// 	// Get the path of the selected file.
+	// 	m.selectedFile = path
+	// }
+
+	// // Did the user select a disabled file?
+	// // This is only necessary to display an error to the user.
+	// if didSelect, path := m.Filepicker.DidSelectDisabledFile(msg); didSelect {
+	// 	// Let's clear the selectedFile and display an error.
+	// 	fmt.Println(errors.New(path + " is not valid."))
+	// 	m.selectedFile = ""
+	// 	return m, tea.Batch(cmd, tick())
+	// }
 
 	// Hand off the message and model to the appropriate update function for the
 	// appropriate view based on the current state.
 	if !m.Chosen {
 		return updateChoices(msg, m)
 	}
+
+	// return m, tea.Batch(cmd, tick())
 	return updateChosen(msg, m)
 }
 
@@ -114,6 +147,7 @@ func (m model) View() string {
 
 // Update loop for the first view where you're choosing a task.
 func updateChoices(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
+
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -141,6 +175,28 @@ func updateChoices(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 		return m, tick()
 	}
 
+	if m.selectedFile == "" {
+		var cmd tea.Cmd
+		// m.Filepicker, cmd = m.Filepicker.Update(msg)
+
+		// Did the user select a file?
+		if didSelect, path := m.Filepicker.DidSelectFile(msg); didSelect {
+			// Get the path of the selected file.
+			m.selectedFile = path
+		}
+
+		// Did the user select a disabled file?
+		// This is only necessary to display an error to the user.
+		if didSelect, path := m.Filepicker.DidSelectDisabledFile(msg); didSelect {
+			// Let's clear the selectedFile and display an error.
+			fmt.Println(errors.New(path + " is not valid."))
+			m.selectedFile = ""
+			return m, tea.Batch(cmd, tick())
+		}
+
+		return m, cmd
+	}
+
 	return m, nil
 }
 
@@ -154,7 +210,7 @@ func updateChosen(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 			if m.Progress >= 1 {
 				m.Progress = 1
 				m.Loaded = true
-				m.Ticks = 3
+				m.Ticks = 100
 				return m, tick()
 			}
 			return m, frame()
@@ -186,11 +242,9 @@ func choicesView(m model) string {
 	tpl += subtle("j/k, up/down: select") + dot + subtle("enter: choose") + dot + subtle("q, esc: quit")
 
 	choices := fmt.Sprintf(
-		"%s\n%s\n%s\n%s",
-		checkbox("Plant carrots", c == 0),
-		checkbox("Go to the market", c == 1),
-		checkbox("Read something", c == 2),
-		checkbox("See friends", c == 3),
+		"%s\n%s",
+		checkbox("Choose an Aesir file", c == 0),
+		checkbox("Start REPL", c == 1),
 	)
 
 	return fmt.Sprintf(tpl, choices, colorFg(strconv.Itoa(m.Ticks), "79"))
@@ -202,11 +256,18 @@ func chosenView(m model) string {
 
 	switch m.Choice {
 	case 0:
-		msg = fmt.Sprintf("Carrot planting?\n\nCool, we'll need %s and %s...", keyword("libgarden"), keyword("vegeutils"))
+		var s strings.Builder
+	s.WriteString("\n  ")
+	if m.selectedFile == "" {
+		s.WriteString("Pick a file:")
+	} else {
+		s.WriteString("Selected file: " + m.Filepicker.Styles.Selected.Render(m.selectedFile))
+	}
+	s.WriteString("\n\n" + m.Filepicker.View() + "\n")
+		msg = s.String()
+		// msg = fmt.Sprintf("Carrot planting?\n\nCool, we'll need %s and %s...", keyword("libgarden"), keyword("vegeutils"))
 	case 1:
 		msg = fmt.Sprintf("A trip to the market?\n\nOkay, then we should install %s and %s...", keyword("marketkit"), keyword("libshopping"))
-	case 2:
-		msg = fmt.Sprintf("Reading time?\n\nOkay, cool, then we’ll need a library. Yes, an %s.", keyword("actual library"))
 	default:
 		msg = fmt.Sprintf("It’s always good to see friends.\n\nFetching %s and %s...", keyword("social-skills"), keyword("conversationutils"))
 	}
