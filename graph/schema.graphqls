@@ -8,8 +8,9 @@ input EvalInput {
   snippet: String!
 }
 
-# type Query {
-# }
+type Query {
+  Mock(input: String!): String!
+}
 
 type Subscription {
   GetEvaluatedSnippets: [Eval!]

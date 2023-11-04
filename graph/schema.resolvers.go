@@ -56,6 +56,11 @@ func (r *mutationResolver) EvaluateSnippet(ctx context.Context, input model.Eval
 		Save(ctx)
 }
 
+// Mock is the resolver for the Mock field.
+func (r *queryResolver) Mock(ctx context.Context, input string) (string, error) {
+	return "", fmt.Errorf("not implemented: Mock - Mock")
+}
+
 // GetEvaluatedSnippets is the resolver for the GetEvaluatedSnippets field.
 func (r *subscriptionResolver) GetEvaluatedSnippets(ctx context.Context) (<-chan []*ent.Eval, error) {
 	ch := make(chan []*ent.Eval)
@@ -90,17 +95,12 @@ func (r *subscriptionResolver) GetEvaluatedSnippets(ctx context.Context) (<-chan
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 
+// Query returns generated.QueryResolver implementation.
+func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
+
 // Subscription returns generated.SubscriptionResolver implementation.
 func (r *Resolver) Subscription() generated.SubscriptionResolver { return &subscriptionResolver{r} }
 
 type mutationResolver struct{ *Resolver }
-type subscriptionResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//     it when you're done.
-//   - You have helper methods in this file. Move them out to keep these resolver files clean.
 type queryResolver struct{ *Resolver }
-type todoResolver struct{ *Resolver }
+type subscriptionResolver struct{ *Resolver }

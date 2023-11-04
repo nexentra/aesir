@@ -34,6 +34,7 @@ type Config struct {
 
 type ResolverRoot interface {
 	Mutation() MutationResolver
+	Query() QueryResolver
 	Subscription() SubscriptionResolver
 }
 
@@ -52,6 +53,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
+		Mock func(childComplexity int, input string) int
 	}
 
 	Subscription struct {
@@ -110,6 +112,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.EvaluateSnippet(childComplexity, args["input"].(model.EvalInput)), true
+
+	case "Query.Mock":
+		if e.complexity.Query.Mock == nil {
+			break
+		}
+
+		args, err := ec.field_Query_Mock_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Mock(childComplexity, args["input"].(string)), true
 
 	case "Subscription.GetEvaluatedSnippets":
 		if e.complexity.Subscription.GetEvaluatedSnippets == nil {
@@ -251,8 +265,9 @@ input EvalInput {
   snippet: String!
 }
 
-# type Query {
-# }
+type Query {
+  Mock(input: String!): String!
+}
 
 type Subscription {
   GetEvaluatedSnippets: [Eval!]
