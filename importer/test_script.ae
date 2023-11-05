@@ -16,4 +16,19 @@ print("\n")
 
 let a = "hey towhid";
 
-println( "We received ", len(a), " arguments to our script.\n" );
+println( "We received ", len(a), " arguments to our script." );
+
+let b = 0
+let func = fn(b){
+if (b == 10){
+	return true
+}
+else{
+	let b = b + 1
+	println(b)
+	func(b)
+}
+	
+}
+
+func(b)
